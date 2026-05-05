@@ -3705,12 +3705,10 @@ function readyToAdvanceTurn() {
             const localHand = p1Hand;
             const owner = 1;
             const stageRow = playerStagingRow();
-            const alreadyStaged = hasPlayerStagedCard();
             const localSide = activeMatchMeta?.localSide || playerSide;
             const serverTurn = activeMatchMeta?.serverTurn || null;
 
             if (r !== stageRow) return false;
-            if (alreadyStaged) return false;
             if (!canOnlineSideStageNow(localSide, serverTurn)) return false;
             if (!localHand[selectedHandIndex]) return false;
 
@@ -3738,7 +3736,10 @@ function readyToAdvanceTurn() {
         if (isSocketRoomTransportMode()) return;
         if (!p1PlacedThisTurn || isAnim || finalResolveMode) return;
         const row = playerStagingRow();
-        p1Hand.push(board[row][lastPlacedCol]);
+const placedCard = board[row]?.[lastPlacedCol] || null;
+        if (!placedCard || placedCard.p !== 1) return;
+
+        p1Hand.push(placedCard);
         board[row][lastPlacedCol] = null;
         
         if(playerSide === 'blue') {
