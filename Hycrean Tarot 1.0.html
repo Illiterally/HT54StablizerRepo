@@ -1731,7 +1731,7 @@ function queueJoinRetry(roomCode = '') {
     return true;
 }
 
-function maybeQueueOnlineAutoResolve() {
+function maybeQueueOnlineAutoResolve(trigger = 'default') {
     if (!isSocketRoomTransportMode()) return false;
     if (isAnim || gameOverShown) return false;
 
@@ -1759,6 +1759,7 @@ function maybeQueueOnlineAutoResolve() {
     if (isOnlineActionLocked('resolve')) return false;
     if (serverTurn?.canResolve && localSide !== 'blue') return false;
 
+    const resolveDelayMs = trigger === 'room:state' ? 0 : 140;
     clearOnlineAutoResolveTimer();
     onlineAutoResolveTimer = setTimeout(() => {
         onlineAutoResolveTimer = null;
@@ -1771,7 +1772,7 @@ function maybeQueueOnlineAutoResolve() {
         const shouldForce = shouldForceEndgameAutoAdvance();
         if (!shouldForce && !latestAutoState?.[latestLocalSide]) return;
         resolveTurn();
-    }, 140);
+    }, resolveDelayMs);
     return true;
 }
 
@@ -2225,7 +2226,7 @@ function handleSocketRoomState(payload = {}) {
         lastEvent: 'room:state',
         lastRoomCode: nextMeta.roomCode || null
     });
-    maybeQueueOnlineAutoResolve();
+    maybeQueueOnlineAutoResolve('room:state');
 
     if (roomStateDigest !== lastRoomStateDigest) {
         if (room.players?.guest) {
