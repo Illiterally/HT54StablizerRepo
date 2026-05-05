@@ -2180,11 +2180,18 @@ function handleSocketRoomState(payload = {}) {
         const shouldReplayEffects = Number.isInteger(incomingTurnNumber)
             && Number.isInteger(localTurnNumberBefore)
             && incomingTurnNumber > localTurnNumberBefore
-            && (nextMeta.localSide || playerSide) !== 'blue';
+            && !isResolveInFlight
         if (shouldReplayEffects) {
             const replayEffects = async () => {
-                if (!isAnim && !gameOverShown && pendingAscension) await playAscensionAnimation();
-                if (!isAnim && !gameOverShown && pendingDamageCells.length) await playDamageFlashAnimation();
+                if (isAnim || gameOverShown) return;
+                const shouldReplayAscension = !!pendingAscension;
+                const shouldReplayDamage = pendingDamageCells.length > 0;
+                if (!shouldReplayAscension && !shouldReplayDamage) {
+                    render();
+                    return;
+                }
+                if (shouldReplayAscension) await playAscensionAnimation();
+                if (shouldReplayDamage) await playDamageFlashAnimation();
             };
             setTimeout(replayEffects, 0);
             deferredRenderToReplay = true;
