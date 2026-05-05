@@ -296,6 +296,7 @@
         .next-btn.online-wait { background: #555; box-shadow: 0 4px 0 #333; }
         .next-btn.online-resolve { border-color: #ffffff; box-shadow: 0 0 0 4px rgba(255,255,255,0.22), 0 4px 0 #0b6e0b; animation: nextTurnPulse 1.2s ease-in-out infinite; }
         .undo-btn { width: 100px; height: 30px; font-size: 0.75rem; cursor: pointer; background: #444; border: 1px solid #666; border-radius: 8px; color: #fff; }
+        .online-disabled-control { opacity: 0.5; filter: grayscale(0.55); cursor: not-allowed !important; }
         
         .hand { display: flex; gap: 8px; flex-grow: 1; background: #2d2d2d; padding: 12px; border-radius: 12px; height: var(--hand-height); align-items: center; justify-content: center; border: 1px solid #444; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
         .hand .card { width: var(--hand-card-width); height: calc(var(--hand-card-height) + 1px); flex: 0 0 auto; }
@@ -1214,6 +1215,22 @@ function syncAutoAdvanceUI() {
     autoWrap.title = 'Automatically resolves only in local play.';
 }
 
+function updateOnlineControlAvailability() {
+    const undoBtn = document.getElementById('undo-btn');
+    if (!undoBtn) return;
+
+    const isOnlineMode = isSocketRoomTransportMode();
+    if (isOnlineMode) {
+        undoBtn.disabled = true;
+        undoBtn.classList.add('online-disabled-control');
+        undoBtn.title = 'Unavailable in Online Mode';
+        return;
+    }
+
+    undoBtn.classList.remove('online-disabled-control');
+    undoBtn.title = '';
+}
+
 function buildTransportStatusText() {
     const meta = activeMatchMeta || {};
     const transportState = activeTransportState || {};
@@ -1279,12 +1296,14 @@ function syncTransportStatusUI() {
         bar.style.display = 'none';
         textEl.innerHTML = 'Local Match';
         syncAutoAdvanceUI();
+        updateOnlineControlAvailability();
         return;
     }
 
     bar.style.display = 'block';
     textEl.innerHTML = buildTransportStatusText();
     syncAutoAdvanceUI();
+    updateOnlineControlAvailability();
 }
 
 function createLocalPlayerId() {
@@ -3422,6 +3441,7 @@ function readyToAdvanceTurn() {
         document.getElementById('p1-big-hp').style.color = p1ColorName === 'BLUE' ? '#4dabf7' : '#ff6b6b';
         document.getElementById('p2-big-hp').style.color = p2ColorName === 'BLUE' ? '#4dabf7' : '#ff6b6b';
         document.getElementById('undo-btn').disabled = gameMode === 'hotseat' || !p1PlacedThisTurn || isAnim;
+        updateOnlineControlAvailability();
 
         const hasBoardCards = board.some(row => row.some(cell => cell));
         const manualCleanupNeeded = ((gameMode === 'hotseat' ? (p1Hand.length === 0 && p2Hand.length === 0) : p1Hand.length === 0) && hasBoardCards) || (finalResolveMode && hasBoardCards);
@@ -3657,6 +3677,7 @@ function readyToAdvanceTurn() {
     }
 
     function undoPlacement() {
+        if (isSocketRoomTransportMode()) return;
         if (!p1PlacedThisTurn || isAnim || finalResolveMode) return;
         const row = playerStagingRow();
         p1Hand.push(board[row][lastPlacedCol]);
