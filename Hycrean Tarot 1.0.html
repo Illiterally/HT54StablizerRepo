@@ -89,7 +89,30 @@
         .header-right { min-width: 170px; justify-content: flex-end; gap: 18px; }
         .p2-stats { font-weight: bold; min-width: 150px; }
         .p1-stats { font-weight: bold; min-width: 150px; text-align: right; }
-        .turn-indicator { font-size: 1.2rem; font-weight: bold; color: #00aa00; flex-grow: 1; text-align: center; }
+        .turn-indicator {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #00aa00;
+    flex-grow: 1;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.season-header-symbol {
+    color: #fff;
+    font-size: 1.05em;
+    line-height: 1;
+    opacity: 0.9;
+    user-select: none;
+    pointer-events: none;
+}
+
+.turn-header-text {
+    color: #00aa00;
+}
         
         .auto-advance-wrap { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: #aaa; flex-shrink: 0; }
         .side-auto-wrap { justify-content: space-between; background: #2d2d2d; border: 1px solid #444; border-radius: 8px; padding: 6px 10px; width: 100px; box-sizing: border-box; }
@@ -1231,6 +1254,41 @@ function updateOnlineControlAvailability() {
     undoBtn.title = '';
 }
 
+    function getSeasonSymbol(season) {
+    const seasonMap = {
+        spring: '✿',
+        summer: '✹',
+        autumn: '❦',
+        winter: '❅'
+    };
+    return seasonMap[season] || '✿';
+}
+
+function renderTurnHeaderWithSeason(turnEl, headerText) {
+    if (!turnEl) return;
+
+    const symbol = getSeasonSymbol(aiMode);
+    turnEl.textContent = '';
+
+    const left = document.createElement('span');
+    left.className = 'season-header-symbol';
+    left.textContent = symbol;
+    left.setAttribute('aria-hidden', 'true');
+
+    const center = document.createElement('span');
+    center.className = 'turn-header-text';
+    center.textContent = headerText;
+
+    const right = document.createElement('span');
+    right.className = 'season-header-symbol';
+    right.textContent = symbol;
+    right.setAttribute('aria-hidden', 'true');
+
+    turnEl.appendChild(left);
+    turnEl.appendChild(center);
+    turnEl.appendChild(right);
+}
+    
 function buildTransportStatusText() {
     const meta = activeMatchMeta || {};
     const transportState = activeTransportState || {};
@@ -3454,7 +3512,7 @@ function readyToAdvanceTurn() {
         if (turnUi.buttonClass) nextBtn.classList.add(turnUi.buttonClass);
         nextBtn.disabled = !!turnUi.buttonDisabled;
         nextBtn.innerHTML = turnUi.buttonLabel;
-        turnEl.innerText = turnUi.headerText;
+       renderTurnHeaderWithSeason(turnEl, turnUi.headerText);
 
         const suitLegend = document.getElementById('suit-legend');
         if (suitLegend) suitLegend.classList.toggle('show', !!suitFunctionsEnabled);
