@@ -2141,6 +2141,7 @@ function handleSocketRoomState(payload = {}) {
 
     const incomingTurnNumber = Number.isInteger(room.turnNumber) ? room.turnNumber : null;
     const localTurnNumberBefore = turnNumber;
+    let deferredRenderToReplay = false;
     const isResolveInFlight = isSocketRoomTransportMode() && isOnlineActionLocked('resolve');
     const shouldIgnoreTurnRegression = isResolveInFlight
         && Number.isInteger(incomingTurnNumber)
@@ -2175,6 +2176,7 @@ function handleSocketRoomState(payload = {}) {
                 if (!isAnim && !gameOverShown && pendingDamageCells.length) await playDamageFlashAnimation();
             };
             setTimeout(replayEffects, 0);
+            deferredRenderToReplay = true;
         } else {
             pendingAscension = null;
             pendingDamageCells = [];
@@ -2238,7 +2240,7 @@ function handleSocketRoomState(payload = {}) {
 
     persistLocalSessionSnapshot();
     updateMenuRoleUI();
-    render();
+    if (!deferredRenderToReplay) render();
     return true;
 }
 
