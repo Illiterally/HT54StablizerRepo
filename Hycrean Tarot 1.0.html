@@ -1506,6 +1506,10 @@ function syncLocalAutoReadyPreference() {
 }
 
 function getSideOwner(side) {
+     if (isSocketRoomTransportMode()) {
+        const owner = onlineSideToLocalOwner(side);
+        if (owner === 1 || owner === 2) return owner;
+    }
     return side === playerSide ? 1 : 2;
 }
 
