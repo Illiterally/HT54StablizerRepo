@@ -2228,6 +2228,12 @@ function handleSocketRoomState(payload = {}) {
     });
     maybeQueueOnlineAutoResolve('room:state');
 
+    if (shouldCatchUpResolve && !incomingAuthoritativeSnapshot && !isAnim && !gameOverShown) {
+        setTimeout(() => {
+            if (!isAnim && !gameOverShown && turnNumber >= incomingTurnNumber) performTurnResolutionCycle();
+        }, 0);
+    }
+
     if (roomStateDigest !== lastRoomStateDigest) {
         if (room.players?.guest) {
             logMsg(`Room ${room.code} connected: both seats present.`);
