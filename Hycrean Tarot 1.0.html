@@ -468,7 +468,48 @@
             .pick-option-row { gap: 10px; }
         }
 
-    </style>
+    
+#splash-screen {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100dvh;
+    z-index: 999;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+#splash-screen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+#splash-play-btn {
+    position: absolute;
+    left: 50%;
+    bottom: max(42px, calc(24px + env(safe-area-inset-bottom)));
+    transform: translateX(-50%);
+    width: min(300px, 52vw);
+    height: 72px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    cursor: pointer;
+    color: transparent;
+}
+
+#splash-screen.splash-hide {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+}
+
+</style>
 </head>
 <body>
 
