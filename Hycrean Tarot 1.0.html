@@ -1682,7 +1682,7 @@ function getTurnUiState() {
         }
         if (hotseatStage === 'resolve') {
             return {
-                headerText: `Ready to Resolve · T${turnNumber}`,
+                headerText: `Wait · T${turnNumber}`,
                 buttonLabel: 'NEXT<br>TURN',
                 buttonDisabled: isAnim || gameOverShown || !readyToAdvanceTurn(),
                 buttonClass: ''
@@ -1747,7 +1747,7 @@ function getTurnUiState() {
     }
 
     return {
-        headerText: `${readyToAdvanceTurn() ? 'Ready to Resolve' : 'Your Turn'} · T${turnNumber}`,
+        headerText: `${readyToAdvanceTurn() ? 'Wait' : 'Your Turn'} · T${turnNumber}`,
         buttonLabel: 'NEXT<br>TURN',
         buttonDisabled: isAnim || gameOverShown || !readyToAdvanceTurn(),
         buttonClass: ''
