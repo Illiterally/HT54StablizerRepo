@@ -469,6 +469,11 @@
         }
 
     
+
+body.splash-active #selection-screen {
+    display: none;
+}
+
 #splash-screen {
     position: fixed;
     inset: 0;
@@ -511,9 +516,9 @@
 
 </style>
 </head>
-<body>
+<body class="splash-active">
 <div id="splash-screen" aria-label="Hycrean Tarot splash screen">
-    <img src="backdrop.png" alt="Hycrean Tarot Online">
+    <img src="Backdrop.png" alt="Hycrean Tarot Online">
     <button id="splash-play-btn" type="button" aria-label="Play Hycrean Tarot">Play</button>
 </div>
     <div id="selection-screen">
@@ -4870,15 +4875,29 @@ const placedCard = board[row]?.[lastPlacedCol] || null;
     document.addEventListener("DOMContentLoaded", () => {
     const splashScreen = document.getElementById("splash-screen");
     const splashPlayBtn = document.getElementById("splash-play-btn");
+    const selectionScreen = document.getElementById("selection-screen");
 
-    if (!splashScreen || !splashPlayBtn) return;
+    if (!splashScreen || !splashPlayBtn) {
+        document.body.classList.remove("splash-active");
+        if (selectionScreen) selectionScreen.style.display = "flex";
+        return;
+    }
 
-    splashPlayBtn.addEventListener("click", () => {
+    const dismissSplash = () => {
         splashScreen.classList.add("splash-hide");
-
+        document.body.classList.remove("splash-active");
+        if (selectionScreen) selectionScreen.style.display = "flex";
         window.setTimeout(() => {
             splashScreen.style.display = "none";
         }, 360);
+    };
+
+    splashPlayBtn.addEventListener("click", dismissSplash);
+    splashPlayBtn.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            dismissSplash();
+        }
     });
 });
 
