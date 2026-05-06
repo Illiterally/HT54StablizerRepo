@@ -512,7 +512,10 @@
 </style>
 </head>
 <body>
-
+<div id="splash-screen" aria-label="Hycrean Tarot splash screen">
+    <img src="backdrop.png" alt="Hycrean Tarot Online">
+    <button id="splash-play-btn" type="button" aria-label="Play Hycrean Tarot">Play</button>
+</div>
     <div id="selection-screen">
         <div class="menu-role-wrap">
             <div class="mode-select-label">Game Type</div>
@@ -4863,6 +4866,21 @@ const placedCard = board[row]?.[lastPlacedCol] || null;
         simulateIncomingAction,
         simulateIncomingSnapshot
     };
+
+    document.addEventListener("DOMContentLoaded", () => {
+    const splashScreen = document.getElementById("splash-screen");
+    const splashPlayBtn = document.getElementById("splash-play-btn");
+
+    if (!splashScreen || !splashPlayBtn) return;
+
+    splashPlayBtn.addEventListener("click", () => {
+        splashScreen.classList.add("splash-hide");
+
+        window.setTimeout(() => {
+            splashScreen.style.display = "none";
+        }, 360);
+    });
+});
 
 </script>
 </body>
